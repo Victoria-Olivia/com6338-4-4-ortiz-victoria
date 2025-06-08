@@ -60,4 +60,45 @@ function updateDisplay() {
 
 function playGame() {}
 
+function resetGame() {
+  remainingGuesses = 10;
+  guessedLetters = [];
+  incorrectLetters = [];
+  wordGuessed = Math.floor(Math.random() * words.length);
+  currentWord = words[wordGuessed];
+  displayedWord = '_'.repeat(currentWord.length);
+  
+  updateDisplay();
+}
 
+document.addEventListener('keydown', function(event) {
+  var key = event.key.toLowerCase();
+
+  if (key.length === 1 && key >= 'a' && key <= 'z' && !guessedLetters.includes(key)) {
+    guessedLetters.push(key);
+    
+    if (currentWord.includes(key)) {
+      displayedWord = displayedWord.split('').map((char, index) => {
+        return currentWord[index] === key ? key : char;
+      }).join('');
+      
+      if (!displayedWord.includes('_')) {
+        wins++;
+        previousWord = currentWord;
+        resetGame();
+      }
+    } else {
+      incorrectLetters.push(key);
+      remainingGuesses--;
+      
+      if (remainingGuesses <= 0) {
+        losses++;
+        previousWord = currentWord;
+        resetGame();
+      }
+    }
+    
+    updateDisplay();
+  }
+}
+);
